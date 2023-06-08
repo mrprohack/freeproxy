@@ -1,2 +1,24 @@
 #!/bin/bash
-curl -s https://www.socks-proxy.net/ | grep -Eo '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b:[0-9]+'
+
+if ! command -v curl &> /dev/null; then
+  read -p "Curl tool is not installed. Do you want to install curl? (y or Y): " install_curl
+  if [[ $install_curl =~ ^[Yy]$ ]]; then
+    if command -v apt-get &> /dev/null; then
+      sudo apt-get update
+      sudo apt-get install curl -y
+    elif command -v yum &> /dev/null; then
+      sudo yum update
+      sudo yum install curl -y
+    else
+      echo "Unsupported package manager. Please manually install curl."
+      exit 1
+    fi
+  else
+    echo "curl tool is required to proceed. Exiting..."
+    exit 1
+  fi
+fi
+
+curl_output=$(curl -s https://www.socks-proxy.net/ | grep -Eo '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b:[0-9]+')
+echo "$curl_output"
+
